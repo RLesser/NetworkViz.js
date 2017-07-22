@@ -15,21 +15,27 @@
 
 // }
 
+(function() {
+	//...
+})
+
 function ForceGraph(selectorString, options) {
 
 	// setting up DOM elements
 
-	var width = parseInt(d3.select("#chart").style("width"), 10)
-		height =  parseInt(d3.select("#chart").style("height"), 10)
+	console.log(selectorString)
+	console.log(d3.selectAll(selectorString))
 
-	var view = d3.select(selectorString)
+	var width = parseInt(d3.selectAll(selectorString).style("width"), 10)
+		height =  parseInt(d3.selectAll(selectorString).style("height"), 10)
+
+	var view = d3.selectAll(selectorString)
 		.append("svg:svg")
 		.attr("width", width)
 		.attr("height", height)
 		.attr("pointer-events", "all")
 		.call(d3.zoom().on("zoom", rescale))
 		.on("dblclick.zoom", null)
-	}
 
 	var background = view
 		.append("svg:rect")
@@ -49,7 +55,5 @@ function ForceGraph(selectorString, options) {
 		.force("charge", d3.forceManyBody().strength(-20))
 		.force("center", d3.forceCenter(width / 2, height / 2))
 		.alphaDecay(0.0002);
-
-	return
 
 }
