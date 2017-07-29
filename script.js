@@ -1,1 +1,1 @@
-var test = ForceGraph("div#chart")
+var test = ForceGraph("#chart")
