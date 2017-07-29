@@ -1,22 +1,28 @@
-// Plugin to create basic graph
+// Basic default options
 
-// var defaultOptions = {
-// 	node: {
-// 		defaultRadius: 2,
-// 		defaultColor: "lightgray",
-// 	},
-// 	backgroundColor: "white",
-// 	simulation: {
-// 		linkDistance: 1,
-// 		linkStrength: 1,
-// 		chargeStrength: -20,
-// 		alphaDecay: 0.0002,
-// 	}
+var defaultOptions = {
+	node: {
+		defaultRadius: 2,
+		defaultColor: "lightgray",
+	},
+	edge: {
+		defaultStroke: "black" 
+	},
+	backgroundColor: "white",
+	simulation: {
+		linkDistance: 1,
+		linkStrength: 1,
+		chargeStrength: -20,
+		alphaDecay: 0.0002,
+	}
 
-// }
+}
 
 
 function ForceGraph(selectorString, options) {
+
+
+	// console.log(test, test2)
 
 	// setting up DOM elements
 
@@ -163,6 +169,17 @@ function ForceGraph(selectorString, options) {
 
 	//Graph data variables
 
-	var methodObj = {}
+	var module = {}
+
+	module.stopSim = function() {
+		simulation.stop();
+	}
+
+	module.startSim = function() {
+		simulation.restart();
+	}
+
+
+	return module
 
 }
