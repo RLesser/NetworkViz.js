@@ -8,3 +8,7 @@ $(".pause").on("click", function() {
 $(".resume").on("click", function() {
 	c1.startSim()
 })
+
+$(".addNode").on("click", function() {
+	c1.addNode("new node", [2, 4])
+})

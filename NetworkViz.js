@@ -32,42 +32,42 @@ function ForceGraph(selectorString, options) {
 
 	var nodeData = [
 		{
-			id: 1
+			
 		},
 		{
-			id: 2
+			
 		},
 		{
-			id: 3
+			
 		},
 		{
-			id: 4
+			
 		},
 		{
-			id: 5
+			
 		}
 	]
 
 	var linkData = [
+		{
+			source: 0,
+			target: 1
+		},
 		{
 			source: 1,
 			target: 2
 		},
 		{
 			source: 2,
+			target: 0
+		},
+		{
+			source: 1,
 			target: 3
 		},
 		{
 			source: 3,
-			target: 1
-		},
-		{
-			source: 2,
 			target: 4
-		},
-		{
-			source: 4,
-			target: 5
 		}
 	]
 
@@ -101,7 +101,7 @@ function ForceGraph(selectorString, options) {
 	console.log(width, height)
 
 	var simulation = d3.forceSimulation()
-		.force("link", d3.forceLink().id(function(d) { return d.id; }).distance(1).strength(1))
+		.force("link", d3.forceLink().distance(1).strength(1))
 		.force("charge", d3.forceManyBody().strength(-20))
 		.force("center", d3.forceCenter(width / 2, height / 2))
 		.alphaDecay(0.0002);
@@ -109,27 +109,12 @@ function ForceGraph(selectorString, options) {
 	var link = graph.append("g")
 		.attr("class", "links")
 		.selectAll("line")
-			.data(linkData)
-			.enter().append("line")
-				.attr("stroke-width", function(d) { return 1; })
-				.attr("stroke", "black")
 
 	var node = graph.append("g")
 		.attr("class", "nodes")
 		.selectAll("circle")
-			.data(nodeData)
-			.enter().append("circle")
-				.attr("id", function(d) {return d.id})
-				.attr("fill", "lightgray")
-				.attr("r", 2)
-				.attr("stroke", "darkgray")
-				// .attr("size", "")
-				// .attr("category", "")
-				// .attr("name", function(d) { return d.name })
-				.call(d3.drag()
-					.on("start", dragstarted)
-					.on("drag", dragged)
-					.on("end", dragended));
+
+	drawGraph();
 
 	function ticked() {
 		link
@@ -142,13 +127,6 @@ function ForceGraph(selectorString, options) {
 			.attr("cx", function(d) { return d.x; })
 			.attr("cy", function(d) { return d.y; });
   	}
-
-	simulation
-		.nodes(nodeData)
-		.on("tick", ticked);
-
-	simulation.force("link")
-		.links(linkData);
 
 	function dragstarted(d) {
 		if (!d3.event.active) simulation.alphaTarget(0.3);
@@ -167,6 +145,32 @@ function ForceGraph(selectorString, options) {
 		d.fy = null;
 	}
 
+	function drawGraph() {
+		node = node.data(nodeData)
+		node.exit().remove()
+		node = node.enter().append("circle")
+			.attr("id", function(d) {return d.id})
+			.attr("fill", "lightgray")
+			.attr("r", 2)
+			.attr("stroke", "darkgray")
+			.call(d3.drag()
+				.on("start", dragstarted)
+				.on("drag", dragged)
+				.on("end", dragended))
+			.merge(node);
+
+		link = link.data(linkData)
+		link.exit().remove();
+		link = link.enter().append("line")
+			.attr("stroke-width", function(d) { return 1; })
+			.attr("stroke", "black")
+			.merge(link)
+
+		simulation.nodes(nodeData).on("tick", ticked);
+		simulation.force("link").links(linkData)
+		simulation.restart()
+	}
+
 	//Graph data variables
 
 	var module = {}
@@ -177,6 +181,18 @@ function ForceGraph(selectorString, options) {
 
 	module.startSim = function() {
 		simulation.restart();
+	}
+
+	module.addEdge = function(source_id, target_id, edge_properties = {}) {
+		linkData.push({ source: source_id, target: target_id, properties: edge_properties })
+	}
+
+	module.addNode = function(node_id = null, edge_ids = [], node_properties = {}, edge_properties = {}) {
+		nodeData.push({ id: node_id, properties: node_properties })
+		edge_ids.forEach(function(idx, edge_id) {
+			module.addEdge(nodeData.length-1, edge_id, edge_properties[edge_id])
+		})
+		drawGraph()
 	}
 
 
