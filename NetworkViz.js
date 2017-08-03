@@ -175,6 +175,8 @@ function ForceGraph(selectorString, options) {
 
 	var module = {}
 
+	module.view = view
+
 	module.stopSim = function() {
 		simulation.stop();
 	}
@@ -183,18 +185,40 @@ function ForceGraph(selectorString, options) {
 		simulation.restart();
 	}
 
-	module.addEdge = function(source_id, target_id, edge_properties = {}) {
+	module.addEdge = function({
+		source_id = null, 
+		target_id = null, 
+		edge_properties = {}
+	} = {}) {
+		console.log("addEdge", source_id, target_id, edge_properties)
+		if (source_id == null || target_id == null) {
+			throw "source id and target id must both be specified"
+		}
 		linkData.push({ source: source_id, target: target_id, properties: edge_properties })
+		// drawGraph()
 	}
 
-	module.addNode = function(node_id = null, edge_ids = [], node_properties = {}, edge_properties = {}) {
-		nodeData.push({ id: node_id, properties: node_properties })
+	module.addNode = function({
+		node_id = null, 
+		coordinates = [width/2, height/2], 
+		edge_ids = [], 
+		node_properties = {}, 
+		edge_properties = {}
+	} = {}) {
+		console.log("addNode", node_id, coordinates, edge_ids, node_properties, edge_properties)
+		nodeData.push({ 
+			id: node_id, 
+			properties: node_properties,
+			x: coordinates[0],
+			y: coordinates[1]
+		})
 		edge_ids.forEach(function(idx, edge_id) {
 			module.addEdge(nodeData.length-1, edge_id, edge_properties[edge_id])
 		})
 		drawGraph()
 	}
 
+	module.redraw = drawGraph
 
 	return module
 
